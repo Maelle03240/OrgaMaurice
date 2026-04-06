@@ -69,6 +69,7 @@ export function dtype(date) {
     if (d === 5) return 'transit'
     if (d >= 6 && d <= 16) return 'pv'      // toute la période parents = saumon
     if (d === 17) return 'dep-p'
+    if (d >= 18) return 'solo'
   }
   // Mars + début avril : avec sœur
   if ((m === 2 && d >= 18) || (m === 3 && d <= 4)) return 'soeur'
