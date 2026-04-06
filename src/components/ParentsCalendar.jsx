@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
-  getAllParentDays, parseKey, dtypeParents, isConge,
+  getAllParentDays, parseKey, dtypeParents,
   DT_COLORS, DAYS_SHORT, dow, dotColor
 } from '../lib/dates'
 
@@ -92,7 +92,7 @@ function renderParentDay(dateKey, parentPlans, activities, selectedDay, onSelect
   const plan = parentPlans[dateKey]
   const actEntries = plan?.activity_entries || []
   const hasActivities = actEntries.length > 0 || plan?.day_type_id
-  const conge = isConge(date)
+  const conge = plan?.is_vacation
 
   // Same border logic as WeekCalendar: dashed only when no activities
   const border = hasActivities

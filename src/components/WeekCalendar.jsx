@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  getFortnight, dk, dtype, inTrip, isMaelleDay,
+  getFortnight, dk, dtype, inTrip,
   DT_COLORS, DAYS_SHORT, MONTHS_FR, TRIP_START, TRIP_END, dotColor
 } from '../lib/dates'
 
@@ -129,9 +129,9 @@ function renderDay(day, selectedDay, onSelectDay, dayPlans, activities) {
         border: emptyBorder
       }}
     >
-      {/* Palm tree 🌴 inline below number for Maëlle days */}
+      {/* Palm tree 🌴 inline below number for Vacation days */}
       <span className="text-[11px] font-semibold leading-none">{day.getDate()}</span>
-      {isMaelleDay(day) && <span className="text-[8px] leading-none">🌴</span>}
+      {plan?.is_vacation && <span className="text-[8px] leading-none">🌴</span>}
       {actEntries.length > 0 && (
         <div className="flex gap-[2px] mt-0.5">
           {actEntries.slice(0, 3).map((entry, i) => {

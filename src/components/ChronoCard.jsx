@@ -4,7 +4,7 @@ import { parseKey, dtype, DT_ACCENT, DT_BADGES, ICON_MAP, MONTHS_FR, DAYS_LONG, 
 
 export default function ChronoCard({
   dateKey, plan, activities, dayTypes,
-  onToggleCar, onAddActivity, onRemoveActivity, onRemoveDayType, highlight
+  onToggleCar, onToggleVacation, onAddActivity, onRemoveActivity, onRemoveDayType, highlight
 }) {
   const date = parseKey(dateKey)
   const dt = dtype(date)
@@ -47,6 +47,15 @@ export default function ChronoCard({
             title={plan?.has_car ? 'Voiture' : 'Bus/Taxi'}
           >
             {plan?.has_car ? <Car size={11} /> : <Bus size={11} />}
+          </button>
+          <button
+            onClick={() => onToggleVacation(dateKey)}
+            className={`text-[11px] font-medium px-2 py-0.5 rounded-full border-[1.5px] flex items-center gap-1 transition-all ${
+              plan?.is_vacation ? 'bg-sunset-light border-sunset text-[#6B4A10]' : 'border-black/10 bg-white/80 text-stone-500'
+            }`}
+            title={plan?.is_vacation ? 'Vacances' : 'Travail'}
+          >
+            {plan?.is_vacation ? '🌴' : '💼'}
           </button>
           <button
             onClick={() => onAddActivity(dateKey)}

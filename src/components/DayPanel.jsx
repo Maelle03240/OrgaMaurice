@@ -4,7 +4,7 @@ import { parseKey, dtype, formatFR, DT_ACCENT, DT_BADGES, ICON_MAP, MONTHS_FR, D
 
 export default function DayPanel({
   dateKey, dayPlans, activities, dayTypes,
-  onToggleCar, onAddActivity, onRemoveActivity, onRemoveDayType, onUpdateNotes, onClose
+  onToggleCar, onToggleVacation, onAddActivity, onRemoveActivity, onRemoveDayType, onUpdateNotes, onClose
 }) {
   if (!dateKey) return null
 
@@ -48,6 +48,16 @@ export default function DayPanel({
             }`}
           >
             {plan.has_car ? <><Car size={12} /> Voiture</> : <><Bus size={12} /> Bus/Taxi</>}
+          </button>
+          <button
+            onClick={() => onToggleVacation(dateKey)}
+            className={`text-[11px] font-medium px-2.5 py-1 rounded-full border-[1.5px] transition-all ${
+              plan.is_vacation
+                ? 'bg-sunset-light border-sunset text-[#6B4A10]'
+                : 'border-black/10 bg-white/80 text-stone-500 hover:bg-sunset-light'
+            }`}
+          >
+            {plan.is_vacation ? '🌴 Vacances' : '💼 Travail'}
           </button>
           <button
             onClick={() => onAddActivity(dateKey)}

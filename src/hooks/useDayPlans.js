@@ -50,6 +50,7 @@ export function useDayPlans() {
       activity_entries: [],
       notes: '',
       has_car: false,
+      is_vacation: false,
       day_type_id: null
     }
     const merged = { ...existing, ...updates, date, calendar, updated_at: new Date().toISOString() }
@@ -73,6 +74,12 @@ export function useDayPlans() {
     const store = calendar === 'parents' ? parentPlans : dayPlans
     const plan = store[date]
     return upsert(date, { has_car: !(plan?.has_car) }, calendar)
+  }
+
+  const toggleVacation = async (date, calendar = 'moi') => {
+    const store = calendar === 'parents' ? parentPlans : dayPlans
+    const plan = store[date]
+    return upsert(date, { is_vacation: !(plan?.is_vacation) }, calendar)
   }
 
   const addActivity = async (date, activityId, count = 1, calendar = 'moi', slot = 'journee') => {
@@ -113,7 +120,7 @@ export function useDayPlans() {
   }
 
   return {
-    dayPlans, parentPlans, loading, upsert, toggleCar,
+    dayPlans, parentPlans, loading, upsert, toggleCar, toggleVacation,
     addActivity, removeActivity, setDayType, removeDayType, updateNotes,
     refetch: fetchAll
   }

@@ -2,8 +2,6 @@ export const TRIP_START = new Date(2026, 2, 18) // 18 mars 2026
 export const TRIP_END = new Date(2026, 5, 21)   // 21 juin 2026
 export const PARENTS_START = new Date(2026, 3, 5)  // 5 avril
 export const PARENTS_END = new Date(2026, 3, 17)   // 17 avril
-export const CONGE_START = new Date(2026, 3, 7)     // 7 avril
-export const CONGE_END = new Date(2026, 3, 10)      // 10 avril
 
 export const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
 export const DAYS_LONG = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche']
@@ -53,10 +51,6 @@ export function inParentsTrip(date) {
   return date >= PARENTS_START && date <= PARENTS_END
 }
 
-export function isConge(date) {
-  return date >= CONGE_START && date <= CONGE_END
-}
-
 export function formatFR(date) {
   return `${DAYS_LONG[dow(date)]} ${date.getDate()} ${MONTHS_FR[date.getMonth()]}`
 }
@@ -88,16 +82,6 @@ export function dtype(date) {
   }
   return 'def'
 }
-
-// Returns true if this date is a personal Maëlle day (congé or vacation)
-// Used to overlay the 🌴 palmier WITHOUT changing the period color
-export function isMaelleDay(date) {
-  const m = date.getMonth(), d = date.getDate()
-  if (m === 3 && d >= 7 && d <= 10) return true   // congé avril (7-10 seulement)
-  if (m === 5 && d >= 16 && d <= 19) return true   // vacances juin
-  return false
-}
-
 
 // Parents day type
 export function dtypeParents(date) {

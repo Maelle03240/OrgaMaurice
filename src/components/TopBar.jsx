@@ -8,7 +8,7 @@ const FILTERS = [
   { id: 'copain', label: '🌺 Avec mon copain' },
 ]
 
-export default function TopBar({ isParentsView, filter, onFilterChange, onParentsView, onMyView, adminOpen, onToggleAdmin }) {
+export default function TopBar({ currentView, filter, onFilterChange, onViewChange, adminOpen, onToggleAdmin }) {
   const [ddOpen, setDdOpen] = useState(false)
   const ddRef = useRef(null)
 
@@ -33,14 +33,14 @@ export default function TopBar({ isParentsView, filter, onFilterChange, onParent
         {/* Moi dropdown */}
         <div className="relative" ref={ddRef}>
           <button
-            onClick={(e) => { e.stopPropagation(); if (isParentsView) { onMyView(); } else { setDdOpen(!ddOpen) } }}
+            onClick={(e) => { e.stopPropagation(); if (currentView !== 'moi') { onViewChange('moi'); } else { setDdOpen(!ddOpen) } }}
             className={`text-[11px] font-medium px-2.5 py-1 rounded-full border-[1.5px] transition-all flex items-center gap-0.5 sm:text-xs sm:px-3 ${
-              !isParentsView ? 'bg-lagon text-white border-transparent shadow-md' : 'border-black/10 bg-white/50 text-stone-500 hover:bg-white/90'
+              currentView === 'moi' ? 'bg-lagon text-white border-transparent shadow-md' : 'border-black/10 bg-white/50 text-stone-500 hover:bg-white/90'
             }`}
           >
             Moi <ChevronDown size={11} />
           </button>
-          {ddOpen && !isParentsView && (
+          {ddOpen && currentView === 'moi' && (
             <div className="absolute top-full mt-1.5 left-0 bg-cream border border-black/10 rounded-sm shadow-xl min-w-[160px] z-50 overflow-hidden animate-slide-in">
               {FILTERS.map((f, i) => (
                 <div key={f.id}>
@@ -61,12 +61,22 @@ export default function TopBar({ isParentsView, filter, onFilterChange, onParent
 
         {/* Parents */}
         <button
-          onClick={onParentsView}
+          onClick={() => onViewChange('parents')}
           className={`text-[11px] font-medium px-2.5 py-1 rounded-full border-[1.5px] transition-all sm:text-xs sm:px-3 ${
-            isParentsView ? 'bg-sunset text-stone-900 border-transparent shadow-md' : 'border-black/10 bg-white/50 text-stone-500 hover:bg-white/90'
+            currentView === 'parents' ? 'bg-sunset text-stone-900 border-transparent shadow-md' : 'border-black/10 bg-white/50 text-stone-500 hover:bg-white/90'
           }`}
         >
           Parents
+        </button>
+
+        {/* Utiles */}
+        <button
+          onClick={() => onViewChange('utiles')}
+          className={`text-[11px] font-medium px-2.5 py-1 rounded-full border-[1.5px] transition-all sm:text-xs sm:px-3 flex items-center gap-1 ${
+            currentView === 'utiles' ? 'bg-coral text-white border-transparent shadow-md' : 'border-black/10 bg-white/50 text-stone-500 hover:bg-white/90'
+          }`}
+        >
+          💡 <span className="hidden sm:inline">Utiles</span>
         </button>
 
         {/* Admin - pushed right */}

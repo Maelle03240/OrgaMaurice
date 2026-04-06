@@ -4,7 +4,7 @@ import { getAllTripDays } from '../lib/dates'
 
 export default function ChronoList({
   filter, dayPlans, activities, dayTypes, showPlanned, highlightDay,
-  onToggleCar, onAddActivity, onRemoveActivity, onRemoveDayType
+  onToggleCar, onToggleVacation, onAddActivity, onRemoveActivity, onRemoveDayType
 }) {
   const days = useMemo(() => {
     let keys = getAllTripDays(filter)
@@ -36,6 +36,7 @@ export default function ChronoList({
           dayTypes={dayTypes}
           highlight={k === highlightDay}
           onToggleCar={onToggleCar}
+          onToggleVacation={onToggleVacation}
           onAddActivity={onAddActivity}
           onRemoveActivity={onRemoveActivity}
           onRemoveDayType={onRemoveDayType}

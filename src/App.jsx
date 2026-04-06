@@ -11,6 +11,7 @@ import Library from './components/Library'
 import AdminPanel from './components/AdminPanel'
 import AddActivityModal from './components/AddActivityModal'
 import Toast from './components/Toast'
+import UsefulInfo from './components/UsefulInfo'
 
 import { useActivities } from './hooks/useActivities'
 import { useDayTypes } from './hooks/useDayTypes'
@@ -33,15 +34,18 @@ function getInitialWeekStart() {
 
 export default function App() {
   // View mode
-  const [isParentsView, setIsParentsView] = useState(false)
+  const [currentView, setCurrentView] = useState('moi') // 'moi' | 'parents' | 'utiles'
+  const isParentsView = currentView === 'parents'
+  const isUtilesView = currentView === 'utiles'
+  
   const [filter, setFilter] = useState('tous')
   const [selectedDay, setSelectedDay] = useState(null)
   const [weekStart, setWeekStart] = useState(getInitialWeekStart)
   const [adminOpen, setAdminOpen] = useState(false)
 
   // Bottom section: 'chrono' | 'library'
-  const [bottomView, setBottomView] = useState('library')
-  const [showPlanned, setShowPlanned] = useState(false)
+  const [bottomView, setBottomView] = useState('chrono')
+  const [showPlanned, setShowPlanned] = useState(true)
 
   // Toast
   const [toastMsg, setToastMsg] = useState('')
@@ -55,13 +59,13 @@ export default function App() {
   const { activities, create: createActivity, remove: removeActivity } = useActivities()
   const { dayTypes, create: createDayType, remove: removeDayType } = useDayTypes()
   const {
-    dayPlans, parentPlans, toggleCar, addActivity, removeActivity: removeDayActivity,
+    dayPlans, parentPlans, toggleCar, toggleVacation, addActivity, removeActivity: removeDayActivity,
     setDayType, removeDayType: removeDayPlanType, updateNotes
   } = useDayPlans()
 
   // Current plans based on view
-  const currentPlans = isParentsView ? parentPlans : dayPlans
-  const currentCalendar = isParentsView ? 'parents' : 'moi'
+  const currentPlans = dayPlans
+  const currentCalendar = 'moi'
 
   // Toast
   const toast = useCallback((msg) => {
@@ -72,16 +76,15 @@ export default function App() {
   }, [])
 
   // View handlers
-  const handleMyView = () => {
-    setIsParentsView(false)
-    setSelectedDay(null)
-    setFilter('tous')
-    setWeekStart(new Date(TRIP_START))
-  }
-
-  const handleParentsView = () => {
-    setIsParentsView(true)
-    setSelectedDay(null)
+  const handleViewChange = (view) => {
+    setCurrentView(view)
+    if (view === 'moi') {
+      setSelectedDay(null)
+      setFilter('tous')
+      setWeekStart(new Date(TRIP_START))
+    } else {
+      setSelectedDay(null)
+    }
   }
 
   const handleFilterChange = (f) => {
@@ -117,12 +120,9 @@ export default function App() {
   }
 
   // Helper: get the calendars to target for a given date
-  // If the date is in parents trip, always sync both calendars
+  // Since parent view is just a zoomed in view of moi, we only ever write to 'moi'
   const getCalendarsForDate = (dateKey) => {
-    if (!dateKey) return [currentCalendar]
-    const date = parseKey(dateKey)
-    if (inParentsTrip(date)) return ['moi', 'parents']
-    return [currentCalendar]
+    return ['moi']
   }
 
   // Modal: add a single activity from library
@@ -162,6 +162,14 @@ export default function App() {
     for (const c of calendars) await toggleCar(dateKey, c)
     const plan = currentPlans[dateKey]
     toast(plan?.has_car ? '🚌 Transport retiré' : '🚗 Voiture activée')
+  }
+
+  // Vacation toggle
+  const handleToggleVacation = async (dateKey) => {
+    const calendars = getCalendarsForDate(dateKey)
+    for (const c of calendars) await toggleVacation(dateKey, c)
+    const plan = currentPlans[dateKey]
+    toast(plan?.is_vacation ? '💼 Jour de travail' : '🌴 Jour de vacances')
   }
 
   // Remove activity / day type — sync to parents if in parents period
@@ -217,17 +225,20 @@ export default function App() {
   return (
     <div className="min-h-screen">
       <TopBar
-        isParentsView={isParentsView}
+        currentView={currentView}
         filter={filter}
         onFilterChange={handleFilterChange}
-        onParentsView={handleParentsView}
-        onMyView={handleMyView}
+        onViewChange={handleViewChange}
         adminOpen={adminOpen}
         onToggleAdmin={() => setAdminOpen(!adminOpen)}
       />
 
       <div className="pt-[44px] sm:pt-[48px]">
-        <Hero filter={filter} isParentsView={isParentsView} />
+        {isUtilesView ? (
+          <UsefulInfo />
+        ) : (
+          <>
+            <Hero filter={filter} isParentsView={isParentsView} />
 
         {/* Main content area */}
         <div className="max-w-[1140px] mx-auto px-3 py-3 sm:px-5 sm:py-4">
@@ -237,7 +248,7 @@ export default function App() {
             <div className="w-full lg:w-[340px] lg:shrink-0 lg:sticky lg:top-[56px]">
               {isParentsView ? (
                 <ParentsCalendar
-                  parentPlans={parentPlans}
+                  parentPlans={dayPlans}
                   activities={activities}
                   selectedDay={selectedDay}
                   onSelectDay={handleSelectDay}
@@ -264,6 +275,7 @@ export default function App() {
                       activities={activities}
                       dayTypes={dayTypes}
                       onToggleCar={handleToggleCar}
+                      onToggleVacation={handleToggleVacation}
                       onAddActivity={openAddActModal}
                       onRemoveActivity={handleRemoveAct}
                       onRemoveDayType={handleRemoveDayType}
@@ -286,6 +298,7 @@ export default function App() {
                     activities={activities}
                     dayTypes={dayTypes}
                     onToggleCar={handleToggleCar}
+                    onToggleVacation={handleToggleVacation}
                     onAddActivity={openAddActModal}
                     onRemoveActivity={handleRemoveAct}
                     onRemoveDayType={handleRemoveDayType}
@@ -348,12 +361,15 @@ export default function App() {
               showPlanned={showPlanned}
               highlightDay={selectedDay}
               onToggleCar={handleToggleCar}
+              onToggleVacation={handleToggleVacation}
               onAddActivity={openAddActModal}
               onRemoveActivity={handleRemoveAct}
               onRemoveDayType={handleRemoveDayType}
             />
           )}
         </div>
+        </>
+        )}
 
         {/* Admin panel */}
         <AnimatePresence>
