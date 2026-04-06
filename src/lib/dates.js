@@ -73,8 +73,11 @@ export function dtype(date) {
   }
   // Mars + début avril : avec sœur
   if ((m === 2 && d >= 18) || (m === 3 && d <= 4)) return 'soeur'
-  // Mai (m=4) : solo
-  if (m === 4) return 'solo'
+  // Mai (m=4) : solo puis avec Maël
+  if (m === 4) {
+    if (d >= 25) return 'mael'
+    return 'solo'
+  }
   // Juin (m=5) : Maël
   if (m === 5) {
     if (d === 21) return 'dep'
