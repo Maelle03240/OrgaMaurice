@@ -130,7 +130,7 @@ export default function DayPanel({
             })
           ) : (
             <div className="text-[12.5px] text-stone-400 italic py-1">
-               Aucune activité · Clique sur "+ Activité"
+              Aucune activité · Clique sur "+ Activité"
             </div>
           )}
         </div>
@@ -153,7 +153,6 @@ export default function DayPanel({
               e.target.style.height = 'auto'
               e.target.style.height = e.target.scrollHeight + 'px'
               setLocalNotes(e.target.value)
-              onUpdateNotes(dateKey, e.target.value) // Sauvegarde en direct tout de même
             }}
           />
         </div>
