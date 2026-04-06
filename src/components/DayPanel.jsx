@@ -104,11 +104,22 @@ export default function DayPanel({
                   initial={{ opacity: 0, x: -5 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.04 }}
-                  className="flex items-start gap-3 bg-sand rounded-sm p-3 border border-black/10 hover:shadow-sm transition-shadow"
+                  className={`flex items-start gap-3 rounded-sm p-3 border border-black/10 hover:shadow-sm transition-all ${
+                    entry.is_option
+                      ? 'bg-sand/40 opacity-60 border-dashed'
+                      : 'bg-sand'
+                  }`}
                 >
                   <span className="text-lg shrink-0 mt-0.5">{ICON_MAP[act.type] || '📌'}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[12.5px] font-medium">{act.name}</div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="text-[12.5px] font-medium">{act.name}</div>
+                      {entry.is_option && (
+                        <span className="text-[9px] font-bold px-1.5 py-px rounded-full border border-stone-300 text-stone-400 uppercase tracking-wider">
+                          option
+                        </span>
+                      )}
+                    </div>
                     <div className="text-[11px] text-stone-400 mt-0.5">
                       📍 {act.lieu}
                       <span className={`ml-2 text-[11px] font-semibold px-1.5 py-px rounded-full ${

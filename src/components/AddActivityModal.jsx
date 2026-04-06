@@ -39,7 +39,7 @@ export default function AddActivityModal({
       onConfirm({ dateKey, activityIds: items, calendar: targetCalendar, slot })
     } else if (mode === 'jtype') {
       if (!pickedDate) { alert('Choisis une date !'); return }
-      onConfirm({ dateKey: pickedDate, dayTypeId: dayType.id, activityIds: dayType.activity_ids || [], calendar: targetCalendar, slot })
+      onConfirm({ dateKey: pickedDate, dayTypeId: dayType.id, activityIds: dayType.activity_ids || [], activityOptions: dayType.activity_options || [], calendar: targetCalendar, slot })
     } else if (mode === 'singleAct') {
       if (!pickedDate) { alert('Choisis une date !'); return }
       onConfirm({ dateKey: pickedDate, activityIds: [singleActivity.id], calendar: targetCalendar, slot })

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, Settings } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 
 const FILTERS = [
   { id: 'tous', label: '📅 Tout mon séjour' },
@@ -8,7 +8,7 @@ const FILTERS = [
   { id: 'copain', label: '🌺 Avec mon copain' },
 ]
 
-export default function TopBar({ currentView, filter, onFilterChange, onViewChange, adminOpen, onToggleAdmin }) {
+export default function TopBar({ currentView, filter, onFilterChange, onViewChange }) {
   const [ddOpen, setDdOpen] = useState(false)
   const ddRef = useRef(null)
 
@@ -79,15 +79,15 @@ export default function TopBar({ currentView, filter, onFilterChange, onViewChan
           💡 <span className="hidden sm:inline">Utiles</span>
         </button>
 
-        {/* Admin - pushed right */}
+        {/* Admin */}
         <div className="ml-auto">
           <button
-            onClick={onToggleAdmin}
+            onClick={() => onViewChange('admin')}
             className={`text-[11px] font-medium px-2.5 py-1 rounded-full border-[1.5px] transition-all flex items-center gap-1 sm:text-xs sm:px-3 ${
-              adminOpen ? 'bg-lilac text-white border-transparent shadow-md' : 'border-black/10 bg-white/50 text-stone-500 hover:bg-white/90'
+              currentView === 'admin' ? 'bg-lilac text-white border-transparent shadow-md' : 'border-black/10 bg-white/50 text-stone-500 hover:bg-white/90'
             }`}
           >
-            <Settings size={12} /> <span className="hidden sm:inline">Admin</span>
+            ⚙️ <span className="hidden sm:inline">Admin</span>
           </button>
         </div>
       </div>

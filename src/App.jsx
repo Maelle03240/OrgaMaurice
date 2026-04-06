@@ -41,7 +41,6 @@ export default function App() {
   const [filter, setFilter] = useState('tous')
   const [selectedDay, setSelectedDay] = useState(null)
   const [weekStart, setWeekStart] = useState(getInitialWeekStart)
-  const [adminOpen, setAdminOpen] = useState(false)
 
   // Bottom section: 'chrono' | 'library'
   const [bottomView, setBottomView] = useState('chrono')
@@ -56,11 +55,11 @@ export default function App() {
   const [modal, setModal] = useState(null)
 
   // Hooks
-  const { activities, create: createActivity, remove: removeActivity } = useActivities()
-  const { dayTypes, create: createDayType, remove: removeDayType } = useDayTypes()
+  const { activities, create: createActivity, update: updateActivity, remove: removeActivity } = useActivities()
+  const { dayTypes, create: createDayType, update: updateDayType, remove: removeDayType } = useDayTypes()
   const {
     dayPlans, parentPlans, toggleCar, toggleVacation, addActivity, removeActivity: removeDayActivity,
-    setDayType, removeDayType: removeDayPlanType, updateNotes
+    setDayType, removeDayType: removeDayPlanType, updateNotes, toggleActivityOption, syncDayPlansWithType
   } = useDayPlans()
 
   // Current plans based on view
@@ -90,7 +89,6 @@ export default function App() {
   const handleFilterChange = (f) => {
     setFilter(f)
     setSelectedDay(null)
-    setIsParentsView(false)
     if (f === 'soeur') setWeekStart(new Date(2026, 2, 18))
     else if (f === 'meparents') setWeekStart(new Date(2026, 3, 5))
     else if (f === 'copain') setWeekStart(new Date(2026, 5, 1))
@@ -132,13 +130,13 @@ export default function App() {
   }
 
   // Modal confirm
-  const handleModalConfirm = async ({ dateKey, activityIds, dayTypeId }) => {
+  const handleModalConfirm = async ({ dateKey, activityIds, dayTypeId, activityOptions }) => {
     // Automatically sync to parents calendar if date is in parents trip period
     const calendars = getCalendarsForDate(dateKey)
 
     for (const c of calendars) {
       if (dayTypeId) {
-        await setDayType(dateKey, dayTypeId, activityIds, c)
+        await setDayType(dateKey, dayTypeId, activityIds, activityOptions, c)
       } else {
         for (const aid of activityIds) {
           await addActivity(dateKey, aid, 1, c)
@@ -172,7 +170,7 @@ export default function App() {
     toast(plan?.is_vacation ? '💼 Jour de travail' : '🌴 Jour de vacances')
   }
 
-  // Remove activity / day type — sync to parents if in parents period
+  // Remove activity / day type + toggle option
   const handleRemoveAct = async (dateKey, idx) => {
     const calendars = getCalendarsForDate(dateKey)
     for (const c of calendars) await removeDayActivity(dateKey, idx, c)
@@ -180,6 +178,10 @@ export default function App() {
   const handleRemoveDayType = async (dateKey) => {
     const calendars = getCalendarsForDate(dateKey)
     for (const c of calendars) await removeDayPlanType(dateKey, c)
+  }
+  const handleToggleOption = async (dateKey, idx) => {
+    const calendars = getCalendarsForDate(dateKey)
+    for (const c of calendars) await toggleActivityOption(dateKey, idx, c)
   }
 
   // Notes
@@ -192,10 +194,14 @@ export default function App() {
     }, 600)
   }
 
-  // Admin handlers
   const handleCreateActivity = async (act) => {
     const result = await createActivity(act)
     if (result) toast(`✓ "${act.name}" sauvegardée`)
+    return result
+  }
+  const handleUpdateActivity = async (id, changes) => {
+    const result = await updateActivity(id, changes)
+    if (result) toast('✓ Activité mise à jour')
     return result
   }
   const handleDeleteActivity = async (id) => {
@@ -206,6 +212,15 @@ export default function App() {
   const handleCreateDayType = async (jt) => {
     const result = await createDayType(jt)
     if (result) toast(`✓ "${jt.name}" sauvegardée`)
+    return result
+  }
+  const handleUpdateDayType = async (id, changes) => {
+    const result = await updateDayType(id, changes)
+    if (result) {
+      // Sync all existing day plans that use this day type
+      await syncDayPlansWithType(id, changes.activity_ids, changes.activity_options)
+      toast('✓ Journée mise à jour & planning synchronisé')
+    }
     return result
   }
   const handleDeleteDayType = async (id) => {
@@ -229,13 +244,22 @@ export default function App() {
         filter={filter}
         onFilterChange={handleFilterChange}
         onViewChange={handleViewChange}
-        adminOpen={adminOpen}
-        onToggleAdmin={() => setAdminOpen(!adminOpen)}
       />
 
       <div className="pt-[44px] sm:pt-[48px]">
-        {isUtilesView ? (
+        {currentView === 'utiles' ? (
           <UsefulInfo />
+        ) : currentView === 'admin' ? (
+          <AdminPanel
+            activities={activities}
+            dayTypes={dayTypes}
+            onCreateActivity={handleCreateActivity}
+            onUpdateActivity={handleUpdateActivity}
+            onDeleteActivity={handleDeleteActivity}
+            onCreateDayType={handleCreateDayType}
+            onUpdateDayType={handleUpdateDayType}
+            onDeleteDayType={handleDeleteDayType}
+          />
         ) : (
           <>
             <Hero filter={filter} isParentsView={isParentsView} />
@@ -370,20 +394,6 @@ export default function App() {
         </div>
         </>
         )}
-
-        {/* Admin panel */}
-        <AnimatePresence>
-          {adminOpen && (
-            <AdminPanel
-              activities={activities}
-              dayTypes={dayTypes}
-              onCreateActivity={handleCreateActivity}
-              onDeleteActivity={handleDeleteActivity}
-              onCreateDayType={handleCreateDayType}
-              onDeleteDayType={handleDeleteDayType}
-            />
-          )}
-        </AnimatePresence>
 
         {/* Footer */}
         <div className="text-center py-5 text-[11px] text-stone-400 tracking-wide">

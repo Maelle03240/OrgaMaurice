@@ -118,12 +118,13 @@ export function useDayPlans() {
     return upsert(date, { activity_entries: entries }, calendar)
   }
 
-  const setDayType = async (date, dayTypeId, activityIds = [], calendar = 'moi') => {
+  const setDayType = async (date, dayTypeId, activityIds = [], activityOptions = [], calendar = 'moi') => {
     const store = calendar === 'parents' ? parentPlans : dayPlans
     const plan = store[date]
     const entries = [...(plan?.activity_entries || [])]
     activityIds.forEach(aid => {
-      entries.push({ actId: aid, iid: Date.now() + Math.random() })
+      const isOption = activityOptions.includes(aid)
+      entries.push({ actId: aid, is_option: isOption, iid: Date.now() + Math.random() })
     })
     return upsert(date, { day_type_id: dayTypeId, activity_entries: entries }, calendar)
   }
@@ -136,9 +137,43 @@ export function useDayPlans() {
     return upsert(date, { notes }, calendar)
   }
 
+  const toggleActivityOption = async (date, index, calendar = 'moi') => {
+    const store = calendar === 'parents' ? parentPlans : dayPlans
+    const plan = store[date]
+    if (!plan) return
+    const entries = [...(plan.activity_entries || [])]
+    entries[index] = { ...entries[index], is_option: !entries[index]?.is_option }
+    return upsert(date, { activity_entries: entries }, calendar)
+  }
+
+  const syncDayPlansWithType = async (dayTypeId, activityIds, activityOptions = []) => {
+    const { data: allPlans, error } = await supabase
+      .from('day_plans')
+      .select('*')
+      .eq('day_type_id', dayTypeId)
+    
+    if (error || !allPlans || allPlans.length === 0) return
+
+    const updates = allPlans.map(plan => {
+      const entries = []
+      activityIds.forEach(aid => {
+        entries.push({
+          actId: aid,
+          is_option: activityOptions.includes(aid),
+          iid: Date.now() + Math.random()
+        })
+      })
+      return { ...plan, activity_entries: entries, updated_at: new Date().toISOString() }
+    })
+
+    const { error: upsertError } = await supabase.from('day_plans').upsert(updates)
+    if (!upsertError) await fetchAll()
+    return !upsertError
+  }
+
   return {
     dayPlans, parentPlans, loading, upsert, toggleCar, toggleVacation,
     addActivity, removeActivity, setDayType, removeDayType, updateNotes,
-    refetch: fetchAll
+    toggleActivityOption, syncDayPlansWithType, refetch: fetchAll
   }
 }

@@ -22,6 +22,11 @@ html { scroll-behavior: smooth; }
 .animate-slide-in { animation: slideIn 0.22s ease; }
 .animate-fade-in { animation: fadeIn 0.2s ease; }
 
+/* ── Form input utility ── */
+.input {
+  @apply w-full px-3 py-2 rounded-sm border-[1.5px] border-black/10 bg-sand text-[13px] outline-none focus:border-lagon transition-colors font-body;
+}
+
 /* ── Dotted pattern for hero ── */
 .hero-dots {
   background: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);

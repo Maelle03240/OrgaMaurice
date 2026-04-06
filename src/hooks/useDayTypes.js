@@ -29,10 +29,24 @@ export function useDayTypes() {
     return null
   }
 
+  const update = async (id, changes) => {
+    const { data, error } = await supabase
+      .from('day_types')
+      .update(changes)
+      .eq('id', id)
+      .select()
+      .single()
+    if (!error && data) {
+      setDayTypes(prev => prev.map(j => j.id === id ? data : j))
+      return data
+    }
+    return null
+  }
+
   const remove = async (id) => {
     await supabase.from('day_types').delete().eq('id', id)
     setDayTypes(prev => prev.filter(j => j.id !== id))
   }
 
-  return { dayTypes, loading, create, remove, refetch: fetchAll }
+  return { dayTypes, loading, create, update, remove, refetch: fetchAll }
 }

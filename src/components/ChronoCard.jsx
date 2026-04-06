@@ -79,10 +79,22 @@ export default function ChronoCard({
             const act = activities.find(a => a.id === entry.actId)
             if (!act) return null
             return (
-              <div key={entry.iid || idx} className="flex items-center gap-2.5 bg-sand rounded-sm p-2.5 border border-black/10">
+              <div
+                key={entry.iid || idx}
+                className={`flex items-center gap-2.5 rounded-sm p-2.5 border border-black/10 transition-all ${
+                  entry.is_option ? 'bg-sand/40 opacity-60 border-dashed' : 'bg-sand'
+                }`}
+              >
                 <span className="text-base shrink-0">{ICON_MAP[act.type] || '📌'}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[12.5px] font-medium">{act.name}</div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="text-[12.5px] font-medium">{act.name}</div>
+                    {entry.is_option && (
+                      <span className="text-[9px] font-bold px-1.5 py-px rounded-full border border-stone-300 text-stone-400 uppercase tracking-wider">
+                        option
+                      </span>
+                    )}
+                  </div>
                   <div className="text-[11px] text-stone-400">
                     📍 {act.lieu}
                     <span className={`ml-1.5 font-semibold px-1.5 py-px rounded-full ${
