@@ -7,75 +7,51 @@ const FILTER_LABELS = {
   copain: 'Avec mon copain',
 }
 
+// 🌊 CAUSTICS (Eau scintillante très douce)
 const WaterReflections = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none mix-blend-overlay opacity-30 select-none">
-    <motion.div 
+  <div className="absolute inset-0 overflow-hidden mix-blend-screen opacity-[0.04] pointer-events-none select-none">
+    <motion.div
       className="absolute -inset-[100%]"
       style={{
-        backgroundImage: 'repeating-linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 15%, rgba(255,255,255,0) 30%)',
-        backgroundSize: '150px 150px'
+        backgroundImage: `url(${import.meta.env.BASE_URL}images/caustics.png)`,
+        backgroundSize: '400px 400px',
+        backgroundRepeat: 'repeat'
       }}
-      animate={{ backgroundPosition: ['0px 0px', '150px 150px'] }}
-      transition={{ repeat: Infinity, duration: 20, ease: 'linear' }}
-    />
-    <motion.div 
-      className="absolute -inset-[100%]"
-      style={{
-        backgroundImage: 'repeating-linear-gradient(-45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 20%, rgba(255,255,255,0) 40%)',
-        backgroundSize: '200px 200px'
-      }}
-      animate={{ backgroundPosition: ['0px 0px', '-200px 200px'] }}
-      transition={{ repeat: Infinity, duration: 28, ease: 'linear' }}
+      animate={{ x: ['0px', '-200px'], y: ['0px', '200px'] }}
+      transition={{ repeat: Infinity, duration: 45, ease: 'linear' }}
     />
   </div>
 )
 
+// 🐢 TORTUE
 const Turtle = () => (
   <motion.div
-    className="absolute top-[25%] pointer-events-none text-white/15 select-none"
-    initial={{ left: '-10%', rotate: 10 }}
-    animate={{ left: '110%', y: [0, -15, 0, 10, 0], rotate: [10, 5, 12, 8, 10] }}
-    transition={{ 
-      left: { repeat: Infinity, duration: 35, ease: 'linear' },
-      y: { repeat: Infinity, duration: 8, ease: 'easeInOut' },
-      rotate: { repeat: Infinity, duration: 8, ease: 'easeInOut' }
-    }}
-  >
-    <svg width="60" height="60" viewBox="0 0 100 100" fill="currentColor">
-      {/* Côté gauche (nageoires) */}
-      <path d="M40 35 Q20 20 5 35 Q20 45 38 40 Z" />
-      <path d="M42 65 Q30 75 25 85 Q40 85 45 68 Z" />
-      {/* Côté droit (nageoires) */}
-      <path d="M60 35 Q80 20 95 35 Q80 45 62 40 Z" />
-      <path d="M58 65 Q70 75 75 85 Q60 85 55 68 Z" />
-      {/* Tête */}
-      <circle cx="50" cy="20" r="6" />
-      {/* Carapace */}
-      <ellipse cx="50" cy="50" rx="16" ry="22" />
-    </svg>
-  </motion.div>
-)
-
-const MantaRay = () => (
-  <motion.div
-    className="absolute bottom-[10%] pointer-events-none text-black/[0.04] select-none"
-    initial={{ right: '-20%', rotate: -15, scale: 1.5 }}
-    animate={{ right: '120%', y: [0, -30, 0], rotate: [-15, -25, -15] }}
-    transition={{ 
-      right: { repeat: Infinity, duration: 45, ease: 'linear', delay: 10 },
+    className="absolute top-[25%] pointer-events-none mix-blend-screen opacity-[0.12] select-none z-0"
+    initial={{ left: '-20%', rotate: 10 }}
+    animate={{ left: '120%', y: [0, -15, 0, 15, 0], rotate: [10, 5, 15, 8, 10] }}
+    transition={{
+      left: { repeat: Infinity, duration: 55, ease: 'linear' },
       y: { repeat: Infinity, duration: 15, ease: 'easeInOut' },
       rotate: { repeat: Infinity, duration: 15, ease: 'easeInOut' }
     }}
   >
-    <svg width="120" height="120" viewBox="0 0 100 100" fill="currentColor">
-      {/* Corps et ailes */}
-      <path d="M 50 15 Q 85 25 98 45 Q 75 60 50 70 Q 25 60 2 45 Q 15 25 50 15 Z" />
-      {/* Queue */}
-      <path d="M 50 70 Q 50 85 52 100" stroke="currentColor" strokeWidth="1.5" fill="none" />
-      {/* Cornes */}
-      <path d="M 46 16 Q 40 5 44 2 Q 50 10 48 15" />
-      <path d="M 54 16 Q 60 5 56 2 Q 50 10 52 15" />
-    </svg>
+    <img src={`${import.meta.env.BASE_URL}images/turtle.png`} alt="" className="w-24 h-24 sm:w-32 sm:h-32 object-contain" />
+  </motion.div>
+)
+
+// 🌊 RAIE MANTA (Profil)
+const MantaRay = () => (
+  <motion.div
+    className="absolute bottom-[10%] pointer-events-none mix-blend-screen opacity-[0.09] select-none z-0"
+    initial={{ right: '-30%', rotate: -5, scale: 0.9 }}
+    animate={{ right: '130%', y: [0, -30, 0], rotate: [-5, -15, -2] }}
+    transition={{
+      right: { repeat: Infinity, duration: 65, ease: 'linear', delay: 10 },
+      y: { repeat: Infinity, duration: 25, ease: 'easeInOut' },
+      rotate: { repeat: Infinity, duration: 25, ease: 'easeInOut' }
+    }}
+  >
+    <img src={`${import.meta.env.BASE_URL}images/ray.png`} alt="" className="w-[130px] h-[130px] sm:w-[170px] sm:h-[170px] object-contain" />
   </motion.div>
 )
 
@@ -92,7 +68,7 @@ export default function Hero({ filter, isParentsView }) {
       <MantaRay />
       <Turtle />
       {/* ------------------------- */}
-      
+
       <div className="relative z-10 drop-shadow-sm">
         <motion.p
           initial={{ opacity: 0, y: -10 }}
