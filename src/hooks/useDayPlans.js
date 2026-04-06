@@ -7,20 +7,37 @@ export function useDayPlans() {
   const [loading, setLoading] = useState(true)
 
   const fetchAll = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('day_plans')
-      .select('*')
-    if (!error && data) {
-      const moi = {}, parents = {}
-      data.forEach(row => {
-        if (row.calendar === 'parents') {
-          parents[row.date] = row
-        } else {
-          moi[row.date] = row
-        }
-      })
-      setDayPlans(moi)
-      setParentPlans(parents)
+    // 1. Charger silencieusement depuis le cache (mode hors-ligne)
+    const cached = localStorage.getItem('orga_maurice_day_plans')
+    if (cached) {
+      try {
+        const { moi, parents } = JSON.parse(cached)
+        setDayPlans(moi || {})
+        setParentPlans(parents || {})
+      } catch (e) {}
+    }
+
+    // 2. Synchroniser avec Supabase
+    try {
+      const { data, error } = await supabase
+        .from('day_plans')
+        .select('*')
+      if (!error && data) {
+        const moi = {}, parents = {}
+        data.forEach(row => {
+          if (row.calendar === 'parents') {
+            parents[row.date] = row
+          } else {
+            moi[row.date] = row
+          }
+        })
+        setDayPlans(moi)
+        setParentPlans(parents)
+        // Sauvegarde locale
+        localStorage.setItem('orga_maurice_day_plans', JSON.stringify({ moi, parents }))
+      }
+    } catch (err) {
+      console.warn("Mode hors-ligne : données non synchronisées")
     }
     setLoading(false)
   }, [])

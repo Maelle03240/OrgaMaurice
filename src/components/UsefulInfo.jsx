@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { PhoneCall, Calculator, BookOpen, ArrowRightLeft, ShieldAlert } from 'lucide-react'
+import WeatherWidget from './WeatherWidget'
 
 export default function UsefulInfo() {
   const [eur, setEur] = useState('1')
@@ -29,7 +30,7 @@ export default function UsefulInfo() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-cream rounded-card border border-black/10 shadow-[0_2px_16px_rgba(0,0,0,.07)] p-4 sm:p-5"
+          className="bg-cream rounded-card border border-black/10 shadow-[0_2px_16px_rgba(0,0,0,.07)] p-4 sm:p-5 flex flex-col justify-center"
         >
           <div className="flex items-center gap-2 text-lagon-dark font-display text-lg font-bold mb-4">
             <Calculator size={20} className="text-lagon" />
@@ -64,6 +65,9 @@ export default function UsefulInfo() {
             </div>
           </div>
         </motion.div>
+
+        {/* Weather */}
+        <WeatherWidget />
 
         {/* Emergency Numbers */}
         <motion.div
