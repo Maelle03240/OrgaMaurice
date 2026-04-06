@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { X, Car, Bus, Plus } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import { parseKey, dtype, formatFR, DT_ACCENT, DT_BADGES, ICON_MAP, MONTHS_FR, DAYS_LONG, dow } from '../lib/dates'
 
 export default function DayPanel({
@@ -14,6 +15,16 @@ export default function DayPanel({
   const badge = DT_BADGES[dt]
   const accent = DT_ACCENT[dt] || '#1B8FAD'
   const dayType = plan.day_type_id ? dayTypes.find(j => j.id === plan.day_type_id) : null
+
+  const [localNotes, setLocalNotes] = useState(plan.notes || '')
+  const [isFocused, setIsFocused] = useState(false)
+
+  // Met à jour la valeur locale SI on ne tape pas dedans (ex: màj en direct par une autre personne)
+  useEffect(() => {
+    if (!isFocused) {
+      setLocalNotes(plan.notes || '')
+    }
+  }, [plan.notes, isFocused, dateKey])
 
   return (
     <motion.div
@@ -119,7 +130,7 @@ export default function DayPanel({
             })
           ) : (
             <div className="text-[12.5px] text-stone-400 italic py-1">
-              Aucune activité · Clique sur "+ Activité"
+               Aucune activité · Clique sur "+ Activité"
             </div>
           )}
         </div>
@@ -129,12 +140,20 @@ export default function DayPanel({
           <textarea
             className="w-full bg-transparent text-[12px] text-stone-400 outline-none resize-none font-body leading-relaxed min-h-[26px] placeholder:text-[#C4B49E]"
             placeholder="Notes pour cette journée…"
-            value={plan.notes || ''}
+            value={localNotes}
             rows={1}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => {
+              setIsFocused(false)
+              if (localNotes !== plan.notes) {
+                onUpdateNotes(dateKey, localNotes)
+              }
+            }}
             onChange={(e) => {
               e.target.style.height = 'auto'
               e.target.style.height = e.target.scrollHeight + 'px'
-              onUpdateNotes(dateKey, e.target.value)
+              setLocalNotes(e.target.value)
+              onUpdateNotes(dateKey, e.target.value) // Sauvegarde en direct tout de même
             }}
           />
         </div>
