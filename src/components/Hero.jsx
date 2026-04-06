@@ -27,8 +27,8 @@ const WaterReflections = () => (
 const Turtle = () => (
   <motion.div
     className="absolute top-[25%] pointer-events-none mix-blend-screen opacity-[0.12] select-none z-0"
-    initial={{ left: '-20%', rotate: 10 }}
-    animate={{ left: '120%', y: [0, -15, 0, 15, 0], rotate: [10, 5, 15, 8, 10] }}
+    initial={{ left: '-20%', rotate: 100 }}
+    animate={{ left: '120%', y: [0, -15, 0, 15, 0], rotate: [100, 95, 105, 98, 100] }}
     transition={{
       left: { repeat: Infinity, duration: 55, ease: 'linear' },
       y: { repeat: Infinity, duration: 15, ease: 'easeInOut' },
